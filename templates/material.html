@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% set cat = CATEGORIES[item.category] %}
+{% block title %}{{ item.title }} — {{ site_name }}{% endblock %}
+
+{% block content %}
+<article class="material cat-{{ item.category }}">
+    <div class="container">
+        <nav class="breadcrumbs">
+            <a href="{{ url_for('index') }}">Главная</a>
+            <span>/</span>
+            <a href="{{ url_for('index') }}#materials">{{ cat.title }}</a>
+            <span>/</span>
+            <span>{{ item.title }}</span>
+        </nav>
+
+        <header class="material-hero">
+            <span class="material-emoji">{{ item.emoji }}</span>
+            <span class="material-cat">{{ cat.emoji }} {{ cat.title }}</span>
+            <h1>{{ item.title }}</h1>
+            <p class="material-lead">{{ item.summary }}</p>
+            <div class="material-meta">
+                <span>✍️ {{ item.author }}</span>
+                <span>🗓 {{ item.date }}</span>
+                <span>⏱ {{ item.read_time }} мин чтения</span>
+            </div>
+            <ul class="tag-list tag-list-center">
+                {% for t in item.tags %}<li>{{ t }}</li>{% endfor %}
+            </ul>
+        </header>
+
+        <div class="material-body">
+            {% for block in item.sections %}
+            <section class="material-section reveal">
+                <h2><span class="h2-dot"></span>{{ block.heading }}</h2>
+                {% for p in block.get('paragraphs', []) %}
+                    <p>{{ p }}</p>
+                {% endfor %}
+                {% if block.get('list') %}
+                <ul class="material-list">
+                    {% for li in block['list'] %}
+                        <li><span class="li-check">✓</span>{{ li }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </section>
+            {% endfor %}
+
+            <div class="material-cta">
+                <div>
+                    <h3>Есть чем поделиться?</h3>
+                    <p>Расскажите о своём опыте на форуме — это поможет другим.</p>
+                </div>
+                <a class="btn btn-primary" href="{{ url_for('forum') }}">Перейти на форум →</a>
+            </div>
+        </div>
+    </div>
+</article>
+
+{% if related %}
+<section class="section section-tight">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <span class="eyebrow">Читайте также</span>
+                <h2>Похожие материалы</h2>
+            </div>
+            <a class="link-more" href="{{ url_for('index') }}#materials">Все материалы →</a>
+        </div>
+        <div class="cards cards-3">
+            {% for m in related %}
+            {% set rcat = CATEGORIES[m.category] %}
+            <article class="card cat-{{ m.category }} reveal" data-category="{{ m.category }}">
+                <div class="card-head">
+                    <span class="card-emoji">{{ m.emoji }}</span>
+                    <span class="card-cat">{{ rcat.emoji }} {{ rcat.title }}</span>
+                </div>
+                <div class="card-body">
+                    <h3>{{ m.title }}</h3>
+                    <p>{{ m.summary }}</p>
+                </div>
+                <div class="card-foot">
+                    <span class="read-time">⏱ {{ m.read_time }} мин</span>
+                    <a class="btn btn-open" href="{{ url_for('material', slug=m.slug) }}">
+                        Открыть материал <span class="arrow">→</span>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

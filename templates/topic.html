@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% set tcat = CATEGORIES[topic.category] %}
+{% block title %}{{ topic.title }} — Форум — {{ site_name }}{% endblock %}
+
+{% block content %}
+<article class="cat-{{ topic.category }}">
+    <section class="page-hero topic-hero">
+        <div class="container">
+            <nav class="breadcrumbs breadcrumbs-light">
+                <a href="{{ url_for('index') }}">Главная</a>
+                <span>/</span>
+                <a href="{{ url_for('forum') }}">Форум</a>
+                <span>/</span>
+                <span>{{ tcat.title }}</span>
+            </nav>
+            <span class="topic-cat">{{ tcat.emoji }} {{ tcat.title }}</span>
+            <h1>{{ topic.title }}</h1>
+            <div class="topic-meta">
+                <span>👤 {{ topic.author }}</span>
+                <span>🕒 {{ topic.time }}</span>
+                <span>👁 {{ topic.views }} просмотров</span>
+                <span>💬 {{ topic.replies|length }} ответов</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-tight">
+        <div class="container narrow">
+            <div class="post post-op">
+                <span class="post-avatar">{{ topic.author[0]|upper }}</span>
+                <div class="post-body">
+                    <div class="post-head">
+                        <strong>{{ topic.author }}</strong>
+                        <span>{{ topic.time }}</span>
+                    </div>
+                    <p>{{ topic.message }}</p>
+                </div>
+            </div>
+
+            {% for r in topic.replies %}
+            <div class="post reveal">
+                <span class="post-avatar post-avatar-alt">{{ r.author[0]|upper }}</span>
+                <div class="post-body">
+                    <div class="post-head">
+                        <strong>{{ r.author }}</strong>
+                        <span>{{ r.time }}</span>
+                    </div>
+                    <p>{{ r.message }}</p>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="panel reply-panel">
+                <h3>💬 Ответить в теме</h3>
+                <form method="post" action="{{ url_for('forum_reply', topic_id=topic.id) }}" class="form">
+                    <div class="form-row">
+                        <label>Ваше имя
+                            <input type="text" name="author" placeholder="Как к вам обращаться?" maxlength="40">
+                        </label>
+                    </div>
+                    <label>Сообщение
+                        <textarea name="message" rows="4" placeholder="Напишите ответ…" required></textarea>
+                    </label>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Отправить ответ</button>
+                        <a class="btn btn-ghost" href="{{ url_for('forum') }}">← К списку тем</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</article>
+{% endblock %}

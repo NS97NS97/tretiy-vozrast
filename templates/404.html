@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Страница не найдена — {{ site_name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container notfound">
+        <span class="notfound-emoji">🧭</span>
+        <h1>Похоже, мы свернули не туда</h1>
+        <p>Страница не найдена, но это легко исправить.</p>
+        <div class="hero-actions center">
+            <a class="btn btn-primary" href="{{ url_for('index') }}">На главную</a>
+            <a class="btn btn-ghost" href="{{ url_for('forum') }}">На форум →</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% from 'logo.html' import logo_mark %}
+{% block title %}Третий возраст — журнал и форум для жизни в радости{% endblock %}
+
+{% block content %}
+<!-- ===================== ГЛАВНЫЙ ЭКРАН ===================== -->
+<section class="hero">
+    <div class="container hero-inner">
+        <div class="hero-copy">
+            <span class="pill">🌞 Для тех, кто молод душой</span>
+            <h1>
+                Жизнь на полную
+                <span class="grad-text">в любом возрасте</span>
+            </h1>
+            <p class="hero-lead">
+                Здоровье, финансовая спокойствие, путешествия, творчество и живое
+                общение — собрали всё важное в одном тёплом месте. Читайте,
+                пробуйте, находите своих.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="#materials">Смотреть материалы</a>
+                <a class="btn btn-ghost" href="{{ url_for('forum') }}">Перейти на форум →</a>
+            </div>
+            <ul class="hero-stats">
+                <li><strong>10</strong><span>полезных материалов</span></li>
+                <li><strong>6</strong><span>тематических направлений</span></li>
+                <li><strong>∞</strong><span>поводов для общения</span></li>
+            </ul>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+            <div class="hero-card hero-card-1">
+                <span class="hc-emoji">🚶</span>
+                <div>
+                    <strong>Прогулка 30 минут</strong>
+                    <small>бодрость на весь день</small>
+                </div>
+            </div>
+            <div class="hero-card hero-card-2">
+                <span class="hc-emoji">💰</span>
+                <div>
+                    <strong>Спокойные финансы</strong>
+                    <small>простая система</small>
+                </div>
+            </div>
+            <div class="hero-card hero-card-3">
+                <span class="hc-emoji">🤝</span>
+                <div>
+                    <strong>Клуб по интересам</strong>
+                    <small>рядом с домом</small>
+                </div>
+            </div>
+            <div class="hero-ring"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== КАТЕГОРИИ ===================== -->
+<section class="section" id="categories">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <span class="eyebrow">Направления</span>
+                <h2>Шесть дорог к активной жизни</h2>
+            </div>
+            <p class="section-note">Выберите то, что откликается именно вам сегодня.</p>
+        </div>
+
+        <div class="cat-grid">
+            {% for c in categories %}
+            <button class="cat-tile cat-{{ c.key }}" data-filter="{{ c.key }}">
+                <span class="cat-emoji">{{ c.emoji }}</span>
+                <span class="cat-name">{{ c.title }}</span>
+                <span class="cat-tag">{{ c.tagline }}</span>
+                <span class="cat-count">{{ counts[c.key] }} материала</span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ===================== МАТЕРИАЛЫ ===================== -->
+<section class="section" id="materials">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <span class="eyebrow">Журнал</span>
+                <h2>Материалы для активного долголетия</h2>
+            </div>
+            <p class="section-note">Практичные советы, которые легко применить уже сегодня.</p>
+        </div>
+
+        <div class="toolbar">
+            <div class="chips" id="chips">
+                <button class="chip is-active" data-filter="all">Все материалы</button>
+                {% for c in categories %}
+                    <button class="chip" data-filter="{{ c.key }}">{{ c.emoji }} {{ c.title }}</button>
+                {% endfor %}
+            </div>
+            <label class="search">
+                <span aria-hidden="true">🔍</span>
+                <input type="search" id="search" placeholder="Поиск по теме, например «память»" aria-label="Поиск материалов">
+            </label>
+        </div>
+
+        <div class="cards" id="cards">
+            {% for m in materials %}
+            {% set cat = CATEGORIES[m.category] %}
+            <article class="card cat-{{ m.category }} reveal"
+                     data-category="{{ m.category }}"
+                     data-search="{{ (m.title ~ ' ' ~ m.summary ~ ' ' ~ m.tags|join(' '))|lower }}">
+                <div class="card-head">
+                    <span class="card-emoji">{{ m.emoji }}</span>
+                    <span class="card-cat">{{ cat.emoji }} {{ cat.title }}</span>
+                </div>
+                <div class="card-body">
+                    <h3>{{ m.title }}</h3>
+                    <p>{{ m.summary }}</p>
+                    <ul class="tag-list">
+                        {% for t in m.tags[:3] %}
+                            <li>{{ t }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-foot">
+                    <span class="read-time">⏱ {{ m.read_time }} мин</span>
+                    <a class="btn btn-open" href="{{ url_for('material', slug=m.slug) }}">
+                        Открыть материал <span class="arrow">→</span>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <p class="empty-hint" id="emptyHint" hidden>
+            Ничего не найдено. Попробуйте поискать по-другому 🙃
+        </p>
+    </div>
+</section>
+
+<!-- ===================== ФОРУМ ===================== -->
+<section class="section" id="forum-cta">
+    <div class="container">
+        <div class="forum-banner">
+            <span class="forum-banner-mark" aria-hidden="true">{{ logo_mark('fb') }}</span>
+            <div class="forum-banner-copy">
+                <span class="pill pill-light">💬 Сообщество</span>
+                <h2>Тематический форум «Третий возраст»</h2>
+                <p>
+                    Задайте вопрос, поделитесь опытом или найдите попутчиков для
+                    прогулки. Здесь рады каждому — новичкам и завсегдатаям.
+                </p>
+                <a class="btn btn-light" href="{{ url_for('forum') }}">Открыть форум →</a>
+            </div>
+            <div class="forum-banner-tags">
+                <span>Здоровье</span>
+                <span>Финансы</span>
+                <span>Путешествия</span>
+                <span>Хобби</span>
+                <span>Общение</span>
+                <span>Развитие</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== О ПРОЕКТЕ ===================== -->
+<section class="section" id="project-about">
+    <div class="container about-grid">
+        <div>
+            <span class="eyebrow">О проекте</span>
+            <h2>Сайт, который поддерживает и вдохновляет</h2>
+            <p>
+                «Третий возраст» — это не список запретов, а источник
+                энергии. Мы верим: возраст — это не ограничение, а новая
+                глава, в которой есть место движению, любопытству и друзьям.
+            </p>
+        </div>
+        <div class="about-points">
+            <div class="about-point">
+                <span>🧭</span>
+                <div><strong>Простым языком</strong><p>Без сложных терминов и запугивания.</p></div>
+            </div>
+            <div class="about-point">
+                <span>⚡</span>
+                <div><strong>Практично</strong><p>Советы, которые можно применить сразу.</p></div>
+            </div>
+            <div class="about-point">
+                <span>🌍</span>
+                <div><strong>Вместе</strong><p>Форум, где легко найти единомышленников.</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

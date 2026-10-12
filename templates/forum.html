@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Форум сообщества — {{ site_name }}{% endblock %}
+
+{% block content %}
+<section class="page-hero forum-hero">
+    <div class="container">
+        <span class="pill">💬 Сообщество «Третий возраст»</span>
+        <h1>Форум для активных людей</h1>
+        <p class="page-lead">
+            Здесь делятся опытом, поддерживают друг друга и находят друзей по
+            интересам. Выберите тему или создайте свою.
+        </p>
+        <div class="forum-stats">
+            <div><strong>{{ topics|length }}</strong><span>тем</span></div>
+            <div><strong>{{ total_replies }}</strong><span>ответов</span></div>
+            <div><strong>{{ categories|length }}</strong><span>разделов</span></div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container forum-layout">
+        <!-- Левая колонка: форма новой темы -->
+        <aside class="forum-side">
+            <div class="panel">
+                <h3>✏️ Новая тема</h3>
+                <p class="panel-note">Начните обсуждение — вам обязательно ответят.</p>
+                <form method="post" action="{{ url_for('forum_new') }}" class="form">
+                    <label>Ваше имя
+                        <input type="text" name="author" placeholder="Например, Мария" maxlength="40">
+                    </label>
+                    <label>Раздел
+                        <select name="category">
+                            {% for c in categories %}
+                                <option value="{{ c.key }}">{{ c.emoji }} {{ c.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>Заголовок
+                        <input type="text" name="title" placeholder="О чём поговорим?" maxlength="120" required>
+                    </label>
+                    <label>Сообщение
+                        <textarea name="message" rows="4" placeholder="Расскажите подробнее…" required></textarea>
+                    </label>
+                    <button class="btn btn-primary btn-block" type="submit">Создать тему</button>
+                </form>
+            </div>
+
+            <div class="panel panel-soft">
+                <h3>🧭 Разделы</h3>
+                <ul class="forum-cats">
+                    {% for c in categories %}
+                    <li>
+                        <span class="fc-emoji cat-{{ c.key }}">{{ c.emoji }}</span>
+                        <span class="fc-name">{{ c.title }}</span>
+                        <span class="fc-count">{{ counts[c.key] }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Правая колонка: список тем -->
+        <div class="forum-main">
+            <div class="forum-toolbar">
+                <h2>Обсуждения</h2>
+                <div class="chips chips-sm" id="chips">
+                    <button class="chip is-active" data-filter="all">Все</button>
+                    {% for c in categories %}
+                        <button class="chip" data-filter="{{ c.key }}">{{ c.emoji }} {{ c.title }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="topic-list" id="cards">
+                {% for t in topics %}
+                {% set tcat = CATEGORIES[t.category] %}
+                <a class="topic-item cat-{{ t.category }} reveal"
+                   href="{{ url_for('forum_topic', topic_id=t.id) }}"
+                   data-category="{{ t.category }}">
+                    <span class="topic-avatar">{{ t.author[0]|upper }}</span>
+                    <div class="topic-main">
+                        <div class="topic-top">
+                            <span class="topic-cat">{{ tcat.emoji }} {{ tcat.title }}</span>
+                            <span class="topic-time">{{ t.time }}</span>
+                        </div>
+                        <h3>{{ t.title }}</h3>
+                        <p>{{ t.message|truncate(120, true) }}</p>
+                        <span class="topic-author">{{ t.author }}</span>
+                    </div>
+                    <div class="topic-side">
+                        <strong>{{ t.replies|length }}</strong>
+                        <span>ответов</span>
+                        <small>👁 {{ t.views }}</small>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+
+            <p class="empty-hint" id="emptyHint" hidden>В этом разделе пока нет тем.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

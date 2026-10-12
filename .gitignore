@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# IDE и ОС
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Логи и временное
+*.log
+*.tmp
